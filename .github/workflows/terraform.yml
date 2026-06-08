@@ -15,7 +15,7 @@ permissions:
 
 env:
   # Replace these with your environment variables or GitHub Secrets
-  WIF_PROVIDER: 'projects/600365663293/locations/global/workloadIdentityPools/github-demo-pool/attribute.repository/mkandati/google-cloud'
+  WIF_PROVIDER: 'projects/600365663293/locations/global/workloadIdentityPools/github-demo-pool/providers/github-provider'
   GCP_SERVICE_ACCOUNT: 'github-wif@terraform-gcp-498813.iam.gserviceaccount.com'
   GCP_PROJECT_ID: 'terraform-gcp-498813'
 
