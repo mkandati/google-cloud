@@ -1,62 +1,64 @@
-name: 'Terraform Deployment with WIF'
+
+name: Terraform GCP Deployment
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
-# Core requirement for Workload Identity Federation
 permissions:
   contents: read
-  id-token: write
+  id-token: write   # ✅ REQUIRED for Workload Identity
 
 env:
-  # Replace these with your environment variables or GitHub Secrets
-  WIF_PROVIDER: 'projects/600365663293/locations/global/workloadIdentityPools/github-demo-pool/providers/github-provider'
-  GCP_SERVICE_ACCOUNT: 'github-wif@terraform-gcp-498813.iam.gserviceaccount.com'
-  GCP_PROJECT_ID: 'terraform-gcp-498813'
+  PROJECT_ID: terraform-gcp-498813
+  REGION: us-central1
 
 jobs:
   terraform:
-    name: 'Terraform Plan & Apply'
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout the repository code
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      # ✅ Checkout repo
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # 2. Authenticate to GCP using Workload Identity Federation
-    - name: Authenticate to Google Cloud
-      id: auth
-      uses: google-github-actions/auth@v2
-      with:
-        workload_identity_provider: ${{ env.WIF_PROVIDER }}
-        service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-        create_credentials_file: true
+      # ✅ Authenticate to GCP using WIF
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/600365663293/locations/global/workloadIdentityPools/github-demo-pool/providers/github
+          service_account: github-wif@terraform-gcp-498813.iam.gserviceaccount.com
 
-    # 3. Install and configure the Terraform CLI
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.7.0
+      # ✅ Setup gcloud CLI
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
 
-    # 4. Initialize Terraform (Downloads providers and configures backend)
-    - name: Terraform Init
-      run: terraform init
+      # ✅ Verify authentication (optional but useful)
+      - name: Verify GCP Auth
+        run: |
+          gcloud auth list
+          gcloud config list
 
-    # 5. Check formatting
-    - name: Terraform Format Check
-      run: terraform fmt -check
+      # ✅ Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
-    # 6. Generate execution plan
-    - name: Terraform Plan
-      run: terraform plan -input=false
+      # ✅ Terraform Init
+      - name: Terraform Init
+        run: terraform init
 
-    # 7. Apply infrastructure changes (Only on pushes to the main branch)
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
+      # ✅ Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # ✅ Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan
+
+      # ✅ Terraform Apply (only on main branch)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
