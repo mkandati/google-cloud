@@ -31,6 +31,6 @@ resource "google_compute_instance" "default" {
     }
 
     network_interface {
-        network     = "data.google_compute_network.existing_vpc.name"
+        network     = data.google_compute_network.existing_vpc.name
     }
 }
