@@ -10,6 +10,12 @@ provider "google" {
   uniform_bucket_level_access = true
 }*/
 
+# Reference to the existing VPC network
+data "google_compute_network" "existing_vpc" {
+    name     = "default"
+}
+
+# Creat a new Google compute instance
 resource "google_compute_instance" "default" {
     name    = "my-instance"
     machine_type    = "e2-micro"
@@ -25,6 +31,6 @@ resource "google_compute_instance" "default" {
     }
 
     network_interface {
-        network     = "default"
+        network     = "data.google_compute_network.existing_vpc.name"
     }
 }
