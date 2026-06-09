@@ -17,7 +17,7 @@ provider "google" {
 
 # Creat a new Google compute instance
 resource "google_compute_instance" "default" {
-    name    = "my-instance"
+    name    = "my-instance-1"
     machine_type    = "e2-micro"
     zone            = "us-central1-a"
 
@@ -32,5 +32,8 @@ resource "google_compute_instance" "default" {
 
     network_interface {
         network     = "default"
+        access_config {
+            # Obtain public IP
+        }
     }
 }
