@@ -23,7 +23,7 @@ resource "google_compute_instance" "default" {
 
     boot_disk {
         initialize_params {
-            image   = "Ubuntu 26.04 LTS Minimal"
+            image   = "ubuntu-os-cloud/ubuntu-2204-lts"
             labels  = {
                 my_label    = "value"
             }
