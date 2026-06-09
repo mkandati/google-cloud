@@ -11,9 +11,9 @@ provider "google" {
 }*/
 
 # Reference to the existing VPC network
-data "google_compute_network" "existing_vpc" {
+/*data "google_compute_network" "existing_vpc" {
     name     = "default"
-}
+}*/
 
 # Creat a new Google compute instance
 resource "google_compute_instance" "default" {
@@ -31,6 +31,6 @@ resource "google_compute_instance" "default" {
     }
 
     network_interface {
-        network     = data.google_compute_network.existing_vpc.name
+        network     = "default"
     }
 }
